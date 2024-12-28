@@ -14,7 +14,7 @@ find_package(tf2 REQUIRED)
 find_package(angles REQUIRED)
 
 nav2_package()
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 include_directories(
   include

@@ -17,7 +17,7 @@ find_package(nav_2d_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD 20)
 endif()
 
 nav2_package()

@@ -9,7 +9,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(nav2_util REQUIRED)
 
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD 20)
 endif()
 
 nav2_package()
