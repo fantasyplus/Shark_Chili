@@ -85,9 +85,10 @@ TEST_P(OptimizerSuite, OptimizerTest) {
   auto pose = getDummyPointStamped(node, start_pose);
   auto velocity = getDummyTwist();
   auto path = getIncrementalDummyPath(node, path_settings);
+  auto goal = path.poses.back().pose;
   nav2_core::GoalChecker * dummy_goal_checker{nullptr};
 
-  EXPECT_NO_THROW(optimizer->evalControl(pose, velocity, path, dummy_goal_checker));
+  EXPECT_NO_THROW(optimizer->evalControl(pose, velocity, path, goal, dummy_goal_checker));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -103,7 +104,7 @@ INSTANTIATE_TEST_SUITE_P(
     std::make_tuple(
       "DiffDrive",
       std::vector<std::string>(
-        {{"GoalCritic"}, {"GoalAngleCritic"}, {"ObstaclesCritic"},
+        {{"GoalCritic"}, {"GoalAngleCritic"}, {"CostCritic"},
           {"PathAngleCritic"}, {"PathFollowCritic"}, {"PreferForwardCritic"}}),
       true),
     std::make_tuple(
