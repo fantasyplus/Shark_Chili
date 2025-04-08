@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <iostream>
 #include <vector>
 #include <math.h>
 #include <termios.h>
@@ -90,9 +91,6 @@ public:
     TarkbotDriver(const std::string &robot_type, const std::string &port, int baud);
     ~TarkbotDriver();
 
-    bool open_serial_port();
-    void close_serial_port();
-
     // 数据访问接口
     imu_data get_imu() const { return imu_data_; }
     imu_orientation_data get_orientation() const { return orient_data_; }
@@ -100,10 +98,12 @@ public:
     pose_data get_pose() const { return pos_data_; }
     float get_battery() const { return bat_vol_data_; }
 
+    void async_read();
     void send_packet(const uint8_t *data, uint8_t len, uint8_t num);
 
 private:
-    void async_read();
+    bool open_serial_port();
+    void close_serial_port();
     void handle_packet(const uint8_t *data);
     void calculateImuQuaternion(imu_data imu_cel);
 

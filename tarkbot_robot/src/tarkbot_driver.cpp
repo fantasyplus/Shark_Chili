@@ -73,6 +73,8 @@ bool TarkbotDriver::open_serial_port()
     // 串口是否正常打开
     if (err_code_)
     {
+        std::cerr << "Open Port: " << port_name_ << " Failed! Abort!" << std::endl;
+        std::cerr << "Error: " << err_code_.message() << std::endl;
         return false;
     }
 

@@ -4,9 +4,9 @@ TarkbotRosNode::TarkbotRosNode()
     : Node("tarkbot_ros_node")
 {
     // 初始化参数
-    this->declare_parameter<std::string>("port", "/dev/ttyTHS1");
+    this->declare_parameter<std::string>("port", "/dev/ttyACM0");
     this->declare_parameter<int>("baud", 230400);
-    this->declare_parameter<std::string>("robot_type", "r20_mec");
+    this->declare_parameter<std::string>("robot_type", "r20_akm");
     this->declare_parameter<bool>("pub_odom_tf", true);
     this->declare_parameter<std::string>("odom_frame", "odom");
     this->declare_parameter<std::string>("base_frame", "base_footprint");
@@ -38,28 +38,11 @@ TarkbotRosNode::TarkbotRosNode()
     setup_publishers();
     setup_subscribers();
     setup_services();
+    setup_loopback();
 }
 
 TarkbotRosNode::~TarkbotRosNode()
 {
-    // 发送停止指令
-    static uint8_t vel_data[11];
-    vel_data[0] = 0;
-    vel_data[1] = 0;
-    vel_data[2] = 0;
-    vel_data[3] = 0;
-    vel_data[4] = 0;
-    vel_data[5] = 0;
-    driver_->send_packet(vel_data, 6, ID_ROS2CTR_VEL);
-
-    // 发送蜂鸣器关闭指令
-    static uint8_t beep_data[1];
-    beep_data[0] = 0;
-    driver_->send_packet(beep_data, 1, ID_ROS2CTR_BEEP);
-
-    // 关闭驱动
-    driver_->close_serial_port();
-
     driver_.reset();
 
     RCLCPP_INFO(this->get_logger(), "Tarkbot driver disconnected.");
@@ -84,6 +67,7 @@ void TarkbotRosNode::setup_publishers()
     odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
     imu_pub_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
     battery_pub_ = this->create_publisher<std_msgs::msg::Float32>("battery", 10);
+    tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 }
 
 void TarkbotRosNode::setup_subscribers()
@@ -169,10 +153,14 @@ void TarkbotRosNode::setup_loopback()
         {
             while (rclcpp::ok())
             {
+                driver_->async_read();
+
                 publish_odom();
                 publish_imu();
                 publish_battery();
                 publish_odom_tf();
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         });
 
@@ -308,20 +296,20 @@ void TarkbotRosNode::publish_odom_tf()
     odom_tf.transform.rotation.w = q.w();
 
     tf_broadcaster_->sendTransform(odom_tf);
-    RCLCPP_INFO(this->get_logger(), "TF broadcasted: [%s -> %s]", odom_frame_.c_str(), base_frame_.c_str());
+    // RCLCPP_INFO(this->get_logger(), "TF broadcasted: [%s -> %s]", odom_frame_.c_str(), base_frame_.c_str());
 }
 
 void TarkbotRosNode::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
-    static uint8_t vel_data[6];
+    static uint8_t vel_data[11];
 
     // 数据转换
-    vel_data[0] = static_cast<uint8_t>(msg->linear.x * 1000) >> 8;
-    vel_data[1] = static_cast<uint8_t>(msg->linear.x * 1000);
-    vel_data[2] = static_cast<uint8_t>(msg->linear.y * 1000) >> 8;
-    vel_data[3] = static_cast<uint8_t>(msg->linear.y * 1000);
-    vel_data[4] = static_cast<uint8_t>(msg->angular.z * 1000) >> 8;
-    vel_data[5] = static_cast<uint8_t>(msg->angular.z * 1000);
+    vel_data[0] = static_cast<int16_t>(msg->linear.x * 1000) >> 8;
+    vel_data[1] = static_cast<int16_t>(msg->linear.x * 1000);
+    vel_data[2] = static_cast<int16_t>(msg->linear.y * 1000) >> 8;
+    vel_data[3] = static_cast<int16_t>(msg->linear.y * 1000);
+    vel_data[4] = static_cast<int16_t>(msg->angular.z * 1000) >> 8;
+    vel_data[5] = static_cast<int16_t>(msg->angular.z * 1000);
 
     // 设置速度
     driver_->send_packet(vel_data, 6, ID_ROS2CTR_VEL);
