@@ -120,6 +120,7 @@ def generate_launch_description():
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings + [('cmd_vel', 'cmd_vel_nav')]),
+                # prefix='/home/ros2/screen_gdb_wrapper.sh gdb --args'),
             Node(
                 package='nav2_smoother',
                 executable='smoother_server',
