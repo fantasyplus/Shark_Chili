@@ -90,7 +90,7 @@ LifecycleManager::LifecycleManager(const rclcpp::NodeOptions & options)
   init_timer_ = this->create_wall_timer(
     0s,
     [this]() -> void {
-      init_timer_->cancel();
+      init_timer_->cancel();//定时器​立即执行一次后自我取消（cancel()），避免重复触发
       createLifecycleServiceClients();
       if (autostart_) {
         init_timer_ = this->create_wall_timer(
