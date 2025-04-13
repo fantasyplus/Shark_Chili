@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(tarkbot_robot)
+project(tarkbot_driver)
 
 # 设置 C++ 标准
 set(CMAKE_CXX_STANDARD 17)
@@ -38,7 +38,7 @@ include_directories(
 # 编译可执行文件
 add_executable(tarkbot_driver_node
   src/tarkbot_ros_node.cpp
-  src/tarkbot_driver.cpp
+  src/tarkbot_chasis_driver.cpp
 )
 
 target_link_libraries(tarkbot_driver_node
@@ -66,6 +66,13 @@ ament_export_dependencies(
 ament_package()
 
 # 安装可执行文件
-install(TARGETS tarkbot_driver_node
+install(
+  TARGETS tarkbot_driver_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# 安装Python脚本
+install(
+  PROGRAMS scripts/twist_to_ackermann.py
   DESTINATION lib/${PROJECT_NAME}
 )

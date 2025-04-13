@@ -80,7 +80,7 @@ void TarkbotRosNode::setup_subscribers()
 
 void TarkbotRosNode::setup_services()
 {
-    light_service_ = this->create_service<tarkbot_robot::srv::LightSet>(
+    light_service_ = this->create_service<tarkbot_driver::srv::LightSet>(
         "light_set", std::bind(&TarkbotRosNode::light_service_callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
@@ -330,8 +330,8 @@ void TarkbotRosNode::beep_callback(const std_msgs::msg::Int8::SharedPtr msg)
 }
 
 void TarkbotRosNode::light_service_callback(
-    const std::shared_ptr<tarkbot_robot::srv::LightSet::Request> request,
-    const std::shared_ptr<tarkbot_robot::srv::LightSet::Response> response)
+    const std::shared_ptr<tarkbot_driver::srv::LightSet::Request> request,
+    const std::shared_ptr<tarkbot_driver::srv::LightSet::Response> response)
 {
     static uint8_t light_data[6];
     // 数据转换

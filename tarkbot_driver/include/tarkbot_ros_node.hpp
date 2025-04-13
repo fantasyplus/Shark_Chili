@@ -1,4 +1,4 @@
-// tarkbot_robot.hpp - ROS 2接口部分
+// tarkbot_ros_node.hpp - ROS 2接口部分
 #ifndef TARKBOT_ROBOT_H
 #define TARKBOT_ROBOT_H
 
@@ -16,8 +16,8 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 
-#include "tarkbot_driver.hpp"
-#include "tarkbot_robot/srv/light_set.hpp"
+#include "tarkbot_chasis_driver.hpp"
+#include "tarkbot_driver/srv/light_set.hpp"
 
 using namespace std::chrono_literals;
 
@@ -38,8 +38,8 @@ private:
     void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
     void beep_callback(const std_msgs::msg::Int8::SharedPtr msg);
     void light_service_callback(
-        const std::shared_ptr<tarkbot_robot::srv::LightSet::Request> request,
-        const std::shared_ptr<tarkbot_robot::srv::LightSet::Response> response);
+        const std::shared_ptr<tarkbot_driver::srv::LightSet::Request> request,
+        const std::shared_ptr<tarkbot_driver::srv::LightSet::Response> response);
 
     // 定时发布函数
     void publish_odom();
@@ -62,7 +62,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr battery_pub_;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
     rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr beep_sub_;
-    rclcpp::Service<tarkbot_robot::srv::LightSet>::SharedPtr light_service_;
+    rclcpp::Service<tarkbot_driver::srv::LightSet>::SharedPtr light_service_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
     // 参数存储
