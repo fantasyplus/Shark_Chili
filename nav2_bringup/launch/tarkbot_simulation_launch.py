@@ -19,8 +19,9 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
 from launch.conditions import IfCondition
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
@@ -196,6 +197,33 @@ def generate_launch_description():
             '-x', pose['x'], '-y', pose['y'], '-z', pose['z'],
             '-R', pose['R'], '-P', pose['P'], '-Y', pose['Y']])
 
+    # 加载控制器
+    load_joint_state_broadcaster = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+                'joint_state_broadcaster'],
+        output='screen'
+    )
+
+    load_ackermann_steering_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+                'ackermann_steering_controller'],
+        output='screen'
+    )
+
+    register_joint_state_handler = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=start_gazebo_spawner_cmd,
+            on_exit=[load_joint_state_broadcaster],
+        )
+    )
+    register_ackermann_controller_handler = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=load_joint_state_broadcaster,
+            on_exit=[load_ackermann_steering_controller],
+        )
+    )
+
+
     rviz_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(launch_dir, 'rviz_launch.py')),
@@ -237,17 +265,19 @@ def generate_launch_description():
     ld.add_action(declare_simulator_cmd)
     ld.add_action(declare_world_cmd)
     ld.add_action(declare_robot_name_cmd)
-    # ld.add_action(declare_robot_sdf_cmd)
     ld.add_action(declare_use_respawn_cmd)
 
     # Add any conditioned actions
     ld.add_action(start_gazebo_server_cmd)
     ld.add_action(start_gazebo_client_cmd)
     ld.add_action(start_gazebo_spawner_cmd)
+    ld.add_action(start_robot_state_publisher_cmd)
+
+    ld.add_action(register_joint_state_handler)
+    ld.add_action(register_ackermann_controller_handler)
 
     # Add the actions to launch all of the navigation nodes
-    ld.add_action(start_robot_state_publisher_cmd)
-    ld.add_action(rviz_cmd)
+    # ld.add_action(rviz_cmd)
     # ld.add_action(bringup_cmd)
 
     return ld
