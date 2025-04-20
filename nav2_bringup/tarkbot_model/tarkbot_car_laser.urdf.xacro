@@ -55,7 +55,7 @@
     <xacro:property name="laser_m" value="0.1" /> <!-- 雷达质量 -->
 
     <!-- 雷达关节以及link -->
-    <link name="laser_link">
+    <link name="base_scan">
         <visual>
             <geometry>
                 <!-- 圆柱 -->
@@ -78,10 +78,10 @@
 
     <joint name="laser_base_link" type="fixed">
         <parent link="support" />
-        <child link="laser_link" />
+        <child link="base_scan" />
         <origin xyz="${laser_x} ${laser_y} ${laser_z}" />
     </joint>
-    <gazebo reference="laser_link">
+    <gazebo reference="base_scan">
         <material>Gazebo/Black</material>
     </gazebo>
 </robot>
