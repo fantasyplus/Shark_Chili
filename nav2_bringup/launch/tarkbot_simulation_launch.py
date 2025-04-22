@@ -59,7 +59,6 @@ def generate_launch_description():
             'P': LaunchConfiguration('pitch', default='0.00'),
             'Y': LaunchConfiguration('yaw', default='0.00')}
     robot_name = LaunchConfiguration('robot_name')
-    robot_sdf = LaunchConfiguration('robot_sdf')
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -244,6 +243,13 @@ def generate_launch_description():
                           'autostart': autostart,
                           'use_composition': use_composition,
                           'use_respawn': use_respawn}.items())
+    
+    transfer_odom_tf_cmd = Node(
+        package='nav2_bringup',
+        executable='transfer_odom_tf.py',
+        name='transfer_odom_tf',
+        namespace=namespace,
+        output='screen')
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -276,8 +282,10 @@ def generate_launch_description():
     ld.add_action(register_joint_state_handler)
     ld.add_action(register_ackermann_controller_handler)
 
+    ld.add_action(transfer_odom_tf_cmd)
+
     # Add the actions to launch all of the navigation nodes
-    # ld.add_action(rviz_cmd)
-    # ld.add_action(bringup_cmd)
+    ld.add_action(rviz_cmd)
+    ld.add_action(bringup_cmd)
 
     return ld
