@@ -14,10 +14,7 @@ install(DIRECTORY worlds DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY params DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY urdf DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY tarkbot_model DESTINATION share/${PROJECT_NAME})
-install(
-  PROGRAMS scripts/transfer_odom_tf.py
-  DESTINATION lib/${PROJECT_NAME}
-)
+install(DIRECTORY scripts DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

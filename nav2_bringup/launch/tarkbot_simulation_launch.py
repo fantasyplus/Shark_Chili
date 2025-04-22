@@ -250,6 +250,13 @@ def generate_launch_description():
         name='transfer_odom_tf',
         namespace=namespace,
         output='screen')
+    
+    transfer_cmd_vel_cmd = Node(
+        package='nav2_bringup',
+        executable='transfer_cmd_vel.py',
+        name='transfer_cmd_vel',
+        namespace=namespace,
+        output='screen')
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -282,7 +289,9 @@ def generate_launch_description():
     ld.add_action(register_joint_state_handler)
     ld.add_action(register_ackermann_controller_handler)
 
+    # 为阿克曼插件做的转换脚本
     ld.add_action(transfer_odom_tf_cmd)
+    ld.add_action(transfer_cmd_vel_cmd)
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(rviz_cmd)
