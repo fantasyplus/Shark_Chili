@@ -2,7 +2,7 @@
 
   <!-- 雷达 -->
   <gazebo reference="base_scan">
-    <sensor type="ray" name="rplidar">
+    <sensor type="gpu_ray" name="rplidar">
       <pose>0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>5</update_rate>

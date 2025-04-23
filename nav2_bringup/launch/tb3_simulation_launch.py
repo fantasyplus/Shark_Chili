@@ -19,14 +19,11 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
 from launch.conditions import IfCondition
-from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
-# 处理xacro文件
-from xacro import process_file
 
 
 def generate_launch_description():
@@ -59,6 +56,7 @@ def generate_launch_description():
             'P': LaunchConfiguration('pitch', default='0.00'),
             'Y': LaunchConfiguration('yaw', default='0.00')}
     robot_name = LaunchConfiguration('robot_name')
+    robot_sdf = LaunchConfiguration('robot_sdf')
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -150,29 +148,30 @@ def generate_launch_description():
 
     declare_robot_name_cmd = DeclareLaunchArgument(
         'robot_name',
-        default_value='tarkbot_akm',
+        default_value='turtlebot3_waffle',
         description='name of the robot')
+
+    declare_robot_sdf_cmd = DeclareLaunchArgument(
+        'robot_sdf',
+        default_value=os.path.join(bringup_dir, 'worlds', 'waffle.model'),
+        description='Full path to robot sdf file to spawn the robot in gazebo')
 
     # Specify the actions
     start_gazebo_server_cmd = ExecuteProcess(
         condition=IfCondition(use_simulator),
-        cmd=['gzserver', '--verbose','-s', 'libgazebo_ros_init.so',
+        cmd=['gzserver', '-s', 'libgazebo_ros_init.so',
              '-s', 'libgazebo_ros_factory.so', world],
-        cwd=[launch_dir], output='screen',)
+        cwd=[launch_dir], output='screen')
 
     start_gazebo_client_cmd = ExecuteProcess(
         condition=IfCondition(PythonExpression(
             [use_simulator, ' and not ', headless])),
-        cmd=['gzclient', '--verbose'],
+        cmd=['gzclient'],
         cwd=[launch_dir], output='screen')
 
-
-    xacro_file = os.path.join(
-        bringup_dir, 'tarkbot_model',
-        'tarkbot_car.urdf.xacro'
-    )
-
-    robot_description = process_file(xacro_file).toxml()
+    urdf = os.path.join(bringup_dir, 'urdf', 'turtlebot3_waffle.urdf')
+    with open(urdf, 'r') as infp:
+        robot_description = infp.read()
 
     start_robot_state_publisher_cmd = Node(
         condition=IfCondition(use_robot_state_pub),
@@ -191,37 +190,10 @@ def generate_launch_description():
         output='screen',
         arguments=[
             '-entity', robot_name,
-            '-topic', 'robot_description',
+            '-file', robot_sdf,
             '-robot_namespace', namespace,
             '-x', pose['x'], '-y', pose['y'], '-z', pose['z'],
             '-R', pose['R'], '-P', pose['P'], '-Y', pose['Y']])
-
-    # 加载控制器
-    load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-                'joint_state_broadcaster'],
-        output='screen'
-    )
-
-    load_ackermann_steering_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-                'ackermann_steering_controller'],
-        output='screen'
-    )
-
-    register_joint_state_handler = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=start_gazebo_spawner_cmd,
-            on_exit=[load_joint_state_broadcaster],
-        )
-    )
-    register_ackermann_controller_handler = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=load_joint_state_broadcaster,
-            on_exit=[load_ackermann_steering_controller],
-        )
-    )
-
 
     rviz_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -243,20 +215,6 @@ def generate_launch_description():
                           'autostart': autostart,
                           'use_composition': use_composition,
                           'use_respawn': use_respawn}.items())
-    
-    transfer_odom_tf_cmd = Node(
-        package='nav2_bringup',
-        executable='transfer_odom_tf.py',
-        name='transfer_odom_tf',
-        namespace=namespace,
-        output='screen')
-    
-    transfer_cmd_vel_cmd = Node(
-        package='nav2_bringup',
-        executable='transfer_cmd_vel.py',
-        name='transfer_cmd_vel',
-        namespace=namespace,
-        output='screen')
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -278,22 +236,16 @@ def generate_launch_description():
     ld.add_action(declare_simulator_cmd)
     ld.add_action(declare_world_cmd)
     ld.add_action(declare_robot_name_cmd)
+    ld.add_action(declare_robot_sdf_cmd)
     ld.add_action(declare_use_respawn_cmd)
 
     # Add any conditioned actions
     ld.add_action(start_gazebo_server_cmd)
     ld.add_action(start_gazebo_client_cmd)
     ld.add_action(start_gazebo_spawner_cmd)
-    ld.add_action(start_robot_state_publisher_cmd)
-
-    ld.add_action(register_joint_state_handler)
-    ld.add_action(register_ackermann_controller_handler)
-
-    # 为阿克曼插件做的转换脚本
-    ld.add_action(transfer_odom_tf_cmd)
-    ld.add_action(transfer_cmd_vel_cmd)
 
     # Add the actions to launch all of the navigation nodes
+    ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(rviz_cmd)
     ld.add_action(bringup_cmd)
 
