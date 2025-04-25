@@ -196,33 +196,6 @@ def generate_launch_description():
             '-x', pose['x'], '-y', pose['y'], '-z', pose['z'],
             '-R', pose['R'], '-P', pose['P'], '-Y', pose['Y']])
 
-    # 加载控制器
-    load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-                'joint_state_broadcaster'],
-        output='screen'
-    )
-
-    load_ackermann_steering_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-                'ackermann_steering_controller'],
-        output='screen'
-    )
-
-    register_joint_state_handler = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=start_gazebo_spawner_cmd,
-            on_exit=[load_joint_state_broadcaster],
-        )
-    )
-    register_ackermann_controller_handler = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=load_joint_state_broadcaster,
-            on_exit=[load_ackermann_steering_controller],
-        )
-    )
-
-
     rviz_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(launch_dir, 'rviz_launch.py')),
@@ -285,9 +258,6 @@ def generate_launch_description():
     ld.add_action(start_gazebo_client_cmd)
     ld.add_action(start_gazebo_spawner_cmd)
     ld.add_action(start_robot_state_publisher_cmd)
-
-    ld.add_action(register_joint_state_handler)
-    ld.add_action(register_ackermann_controller_handler)
 
     # 为阿克曼插件做的转换脚本
     ld.add_action(transfer_odom_tf_cmd)

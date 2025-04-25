@@ -76,21 +76,19 @@
   <xacro:property name="wheel_length" value="0.02" /><!-- 宽度 -->
   <xacro:property name="wheel_m" value="1.0" /> <!-- 质量  -->
 
-  <!-- 驱动轮宏实现 -->
+  <!-- 后轮 -->
   <xacro:macro name="add_back_wheels" params="name1 name2 flag1 flag2">
     <link name="${name1}_${name2}_wheel">
       <visual>
         <geometry>
           <cylinder radius="${wheel_radius}" length="${wheel_length}" />
         </geometry>
-        <origin xyz="0.0 0.0 0.0" rpy="${PI / 2} 0.0 0.0" />
         <material name="black" />
       </visual>
       <collision>
         <geometry>
           <cylinder radius="${wheel_radius}" length="${wheel_length}" />
         </geometry>
-        <origin xyz="0.0 0.0 0.0" rpy="${PI / 2} 0.0 0.0" />
       </collision>
       <xacro:cylinder_inertial_matrix m="${wheel_m}" r="${wheel_radius}" h="${wheel_length}" />
     </link>
@@ -103,8 +101,10 @@
         ${flag2 * (base_link_length/2 - 0.015 - wheel_radius)} 
         ${flag1 * (base_link_width/2 + wheel_length/2)} 
         ${(wheel_radius - earth_space ) }"
+        rpy="${flag1 * PI/2} 0.0 0.0"
       />
-      <axis xyz="0 1 0" />
+      <axis xyz="0 0 ${-flag1}" />
+      <limit lower="-3.14159" upper="3.14159" effort="70" velocity="-1" />
     </joint>
 
     <gazebo reference="${name1}_${name2}_wheel">
@@ -126,16 +126,15 @@
     <joint name="${name1}_${name2}_steering_joint" type="revolute">
       <parent link="base_link" />
       <child link="${name1}_${name2}_wheel_steering" />
-      <axis xyz="0 1 0" />
+      <axis xyz="0 0 1" />
       <origin
         xyz="
         ${flag2 * (base_link_length/2 - 0.015 - wheel_radius)} 
         ${flag1 * (base_link_width/2 + wheel_length/2 + 0.005)} 
         ${(wheel_radius - earth_space ) }"
-        rpy="${PI / 2} 0.0 0.0"
+        rpy="0.0 0.0 0.0"
       />
-      <dynamics damping="0.2" />
-      <limit effort="1000" lower="${-PI}" upper="${PI}" velocity="30" />
+      <limit effort="-1" lower="${-PI}" upper="${PI}" velocity="-1" />
     </joint>
 
     <!-- 轮子 -->
@@ -158,8 +157,8 @@
       <parent link="${name1}_${name2}_wheel_steering" />
       <child link="${name1}_${name2}_wheel" />
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
-      <axis xyz="0 0 1" />
-      <dynamics damping="0.2" />
+      <axis xyz="0 0 -1" />
+      <limit lower="-3.14159" upper="3.14159" effort="200" velocity="-1" />
     </joint>
 
     <gazebo reference="${name1}_${name2}_wheel">
@@ -176,5 +175,30 @@
   <xacro:add_back_wheels name1="left" name2="back" flag1="1" flag2="-1" />
   <xacro:add_back_wheels name1="right" name2="back" flag1="-1" flag2="-1" />
 
+  <!-- 虚拟方向盘 -->
+  <!-- Virtual Steering wheel -->
+  <link name="virtual_steer_link">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <geometry>
+        <box size="0.01 0.15 0.075" />
+      </geometry>
+      <material name="">
+        <color rgba="1.0 1.0 0.0 1" />
+      </material>
+    </visual>
+    <inertial>  <!-- Gazebo won't show this link without this inertial mass -->
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <mass value="0.001" />
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+    </inertial>
+  </link>
+  <joint name="virtual_steering_wheel_joint" type="revolute">
+    <origin xyz="-0.32 0.0 0.0" rpy="0.0 0.0 0.0" />
+    <parent link="base_link" />
+    <child link="virtual_steer_link" />
+    <axis xyz="-1 0 0" />
+    <limit lower="-3" upper="3" effort="200" velocity="20" />
+  </joint>
 
 </robot>
