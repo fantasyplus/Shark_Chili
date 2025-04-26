@@ -51,9 +51,9 @@ def generate_launch_description():
     use_robot_state_pub = LaunchConfiguration('use_robot_state_pub')
     use_rviz = LaunchConfiguration('use_rviz')
     headless = LaunchConfiguration('headless')
-    pose = {'x': LaunchConfiguration('x_pose', default='1.00'),
-            'y': LaunchConfiguration('y_pose', default='1.00'),
-            'z': LaunchConfiguration('z_pose', default='0.01'),
+    pose = {'x': LaunchConfiguration('x_pose', default='0.00'),
+            'y': LaunchConfiguration('y_pose', default='0.00'),
+            'z': LaunchConfiguration('z_pose', default='0.1'),
             'R': LaunchConfiguration('roll', default='0.00'),
             'P': LaunchConfiguration('pitch', default='0.00'),
             'Y': LaunchConfiguration('yaw', default='0.00')}
@@ -155,7 +155,7 @@ def generate_launch_description():
         launch_arguments={"world": gazebo_world_path}.items(),
     )
 
-    robot_description = process_file(os.path.join(bringup_dir, 'tarkbot_model','tarkbot_car.urdf.xacro')).toxml()
+    robot_description = process_file(os.path.join(bringup_dir, 'ackermann_model','ackermann_car.urdf.xacro')).toxml()
     start_robot_state_publisher_cmd = Node(
         condition=IfCondition(use_robot_state_pub),
         package='robot_state_publisher',

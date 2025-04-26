@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<!--
+  Geometry:
+    The Ackermann steering controllers require the longitudinal
+    separation between the front and back wheel axes and the
+    lateral separation between the left and right front steering axes.
+    
+    For this model:
+    wheel_separation_h = base_length - 2 * axle_offset (wheel_base_length)
+    wheel_separation_w = base_width  + 2 * axle_offset (wheel_base_width)
+-->
+<robot name="racebot" xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- Include xacro for inertials, materials and wheels -->
+  <xacro:include filename="$(find nav2_bringup)/ackermann_model/steer_base/wheel.xacro" />
+
+  <xacro:property name="M_PI" value="3.1415926535897931" />
+  <xacro:arg name="lidar_visual" default="true" />
+
+  <!-- Math constants -->
+  <xacro:property name="deg_to_rad" value="0.01745329251994329577" />
+
+  <!-- Robot base dimensions -->
+  <xacro:property name="base_length" value="0.2" />
+  <xacro:property name="base_width" value="0.1" />
+  <xacro:property name="base_height" value="0.05" />
+  <xacro:property name="base_mass" value="300" />
+
+  <!-- Wheel link dimensions -->
+  <xacro:property name="wheel_radius" value="0.03" />
+  <xacro:property name="wheel_thickness" value="0.02" />
+  <xacro:property name="wheel_mass" value="30.0" />
+
+  <!-- Steering link dimensions -->
+  <xacro:property name="steer_radius" value="0.01" />
+  <xacro:property name="steer_thickness" value="0.01" />
+  <xacro:property name="steer_mass" value="15" />
+
+  <!-- Axle positions -->
+  <xacro:property name="axle_offset" value="0.02" />
+  <xacro:property name="steer_offset" value="0.01" />
+
+  <link name="base_footprint" />
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="base_link" />
+    <origin xyz="0 0 ${base_height/1.5}" rpy="0 0 0" />
+  </joint>
+
+  <!-- Base link -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}" />
+      </geometry>
+      <material name="gray" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="${base_length}/2 ${base_width}/2 ${base_height}/2" />
+      </geometry>
+    </collision>
+    <xacro:solid_cuboid_inertial rpy="0 0 0" xyz="0 0 0" mass="${base_mass}" x="${base_length}"
+      y="${base_width}" z="${base_height}" />
+  </link>
+
+  <!-- Front steer and rear wheel joints required for ackermann_steering_controller -->
+  <xacro:front_steer name="front" parent="base" steer_radius="${steer_radius}"
+    steer_thickness="${steer_thickness}"
+    steer_mass="${steer_mass}" base_length="${base_length}" base_width="${base_width}"
+    axle_offset="${axle_offset}"
+    steer_height="${wheel_radius+steer_offset}"></xacro:front_steer>
+
+  <!-- Rear Link -->
+  <xacro:rear_wheel name="rear" parent="base" wheel_radius="${wheel_radius/4}"
+    wheel_thickness="${wheel_thickness/2}" wheel_mass="${wheel_mass/32}">
+    <origin xyz="${-base_length/2+axle_offset} 0 0" rpy="${-90 * deg_to_rad} 0 0" />
+  </xacro:rear_wheel>
+
+  <!-- Steerable front wheels -->
+  <xacro:front_wheel_lr name="front_right" parent="base" reflect="-1" wheel_radius="${wheel_radius}"
+    wheel_thickness="${wheel_thickness}"
+    wheel_mass="${wheel_mass}" steer_radius="${steer_radius}" steer_thickness="${steer_thickness}"
+    steer_mass="${steer_mass}"
+    base_length="${base_length}" base_width="${base_width}" axle_offset="${axle_offset}"
+    steer_height="${wheel_radius+steer_offset}"></xacro:front_wheel_lr>
+
+  <xacro:front_wheel_lr name="front_left" parent="base" reflect="1" wheel_radius="${wheel_radius}"
+    wheel_thickness="${wheel_thickness}"
+    wheel_mass="${wheel_mass}" steer_radius="${steer_radius}" steer_thickness="${steer_thickness}"
+    steer_mass="${steer_mass}"
+    base_length="${base_length}" base_width="${base_width}" axle_offset="${axle_offset}"
+    steer_height="${wheel_radius+steer_offset}"></xacro:front_wheel_lr>
+
+  <!-- Rear wheels -->
+  <xacro:rear_wheel_lr name="rear_right" parent="base" wheel_radius="${wheel_radius}"
+    wheel_thickness="${wheel_thickness}" wheel_mass="${wheel_mass}">
+    <origin xyz="${-base_length/2+axle_offset} ${-base_width/2-axle_offset} 0"
+      rpy="${-90 * deg_to_rad} 0 0" />
+  </xacro:rear_wheel_lr>
+
+  <xacro:rear_wheel_lr name="rear_left" parent="base" wheel_radius="${wheel_radius}"
+    wheel_thickness="${wheel_thickness}" wheel_mass="${wheel_mass}">
+    <origin xyz="${-base_length/2+axle_offset} ${+base_width/2+axle_offset} 0"
+      rpy="${-90 * deg_to_rad} 0 0" />
+  </xacro:rear_wheel_lr>
+
+  <!-- Colour -->
+  <gazebo reference="base_link">
+    <material>Gazebo/Residential</material>
+  </gazebo>
+
+  <!-- 虚拟方向盘 -->
+  <!-- Virtual Steering wheel -->
+  <link name="virtual_steer_link">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <geometry>
+        <box size="0.01 0.05 0.075" />
+      </geometry>
+      <material name="">
+        <color rgba="1.0 1.0 0.0 1" />
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <mass value="0.001" />
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+    </inertial>
+  </link>
+  <joint name="virtual_steering_wheel_joint" type="revolute">
+    <origin xyz="${-base_length/2} 0.0 0.0" rpy="0.0 0.0 0.0" />
+    <parent link="base_link" />
+    <child link="virtual_steer_link" />
+    <axis xyz="-1 0 0" />
+    <limit lower="-3" upper="3" effort="200" velocity="20" />
+  </joint>
+
+</robot>

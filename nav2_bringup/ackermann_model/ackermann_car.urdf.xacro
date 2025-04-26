@@ -1,0 +1,5 @@
+<!-- 组合小车底盘与摄像头 -->
+<robot name="my_car_camera" xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:include filename="ackermann.urdf.xacro" />
+    <xacro:include filename="ackermann_gazebo.urdf.xacro" />
+</robot>

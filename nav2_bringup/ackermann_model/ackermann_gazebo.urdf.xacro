@@ -1,0 +1,76 @@
+<robot name="my_car_move" xmlns:xacro="http://wiki.ros.org/xacro">
+    <gazebo>
+        <plugin name="gazebo_ros_joint_state_publisher"
+            filename="libgazebo_ros_joint_state_publisher.so">
+            <update_rate>100</update_rate>
+            <joint_name>front_left_steer_joint</joint_name>
+            <joint_name>front_left_wheel_joint</joint_name>
+            <joint_name>front_right_steer_joint</joint_name>
+            <joint_name>front_right_wheel_joint</joint_name>
+            <joint_name>front_steer_joint</joint_name>
+            <joint_name>rear_left_wheel_joint</joint_name>
+            <joint_name>rear_right_wheel_joint</joint_name>
+            <joint_name>rear_wheel_joint</joint_name>
+            <joint_name>virtual_steering_wheel_joint</joint_name>
+        </plugin>
+    </gazebo>
+
+    <gazebo>
+        <plugin name="gazebo_ros_joint_pose_trajectory"
+            filename="libgazebo_ros_joint_pose_trajectory.so">
+            <update_rate>2</update_rate>
+        </plugin>
+    </gazebo>
+
+    <gazebo>
+        <plugin name='gazebo_ackermann_drive' filename='libgazebo_ros_ackermann_drive.so'>
+            <ros>
+                <!-- <namespace>ugv_gazebo_ackermann</namespace> -->
+                <remapping>cmd_vel:=cmd_vel</remapping>
+                <remapping>odom:=odom</remapping>
+                <remapping>distance:=distance</remapping>
+            </ros>
+
+            <update_rate>10.0</update_rate>
+
+            <!-- wheels -->
+            <front_left_joint>front_left_wheel_joint</front_left_joint>
+            <front_right_joint>front_right_wheel_joint</front_right_joint>
+            <rear_left_joint>rear_left_wheel_joint</rear_left_joint>
+            <rear_right_joint>rear_right_wheel_joint</rear_right_joint>
+            <left_steering_joint>front_left_steer_joint</left_steering_joint>
+            <right_steering_joint>front_right_steer_joint</right_steering_joint>
+            <steering_wheel_joint>virtual_steering_wheel_joint</steering_wheel_joint>
+
+            <!-- Max absolute steer angle for tyre in radians-->
+            <!-- Any cmd_vel angular z greater than this would be capped -->
+            <max_steer>0.383972</max_steer>
+
+            <!-- Max absolute steering angle of steering wheel -->
+            <max_steering_angle>1.570796</max_steering_angle>
+
+            <!-- Max absolute linear speed in m/s -->
+            <max_speed>1</max_speed>
+
+            <!-- 转向控制 -->
+            <left_steering_pid_gain>15 0.15 7</left_steering_pid_gain>
+            <left_steering_i_range>0.2 -0.2</left_steering_i_range>
+            <right_steering_pid_gain>15 0.15 7</right_steering_pid_gain>
+            <right_steering_i_range>0.2 -0.2</right_steering_i_range>
+            <!-- 速度控制 -->
+            <linear_velocity_pid_gain>20 0.1 10</linear_velocity_pid_gain>
+
+            <!-- output -->
+            <publish_odom>true</publish_odom>
+            <publish_odom_tf>true</publish_odom_tf>     <!-- Don't pubslish this when using robot
+            localization -->
+            <publish_wheel_tf>false</publish_wheel_tf>  <!-- Don't publish this. It will override all
+            wheel frames to robot_base_frame parameter below.-->
+            <publish_distance>true</publish_distance>
+
+            <odometry_frame>odom</odometry_frame>
+            <robot_base_frame>base_footprint</robot_base_frame>
+
+        </plugin>
+    </gazebo>
+</robot>
