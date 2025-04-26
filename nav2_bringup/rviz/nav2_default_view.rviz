@@ -83,28 +83,18 @@ Visualization Manager:
           Value: false
         base_scan:
           Value: false
-        camera_depth_frame:
-          Value: false
-        camera_depth_optical_frame:
-          Value: false
-        camera_link:
-          Value: false
-        camera_rgb_frame:
-          Value: false
-        camera_rgb_optical_frame:
-          Value: false
-        caster_back_left_link:
-          Value: false
-        caster_back_right_link:
-          Value: false
         imu_link:
           Value: false
-        odom:
+        left_back_wheel:
           Value: true
-        wheel_left_link:
-          Value: false
-        wheel_right_link:
-          Value: false
+        left_front_wheel_steering:
+          Value: true
+        right_back_wheel:
+          Value: true
+        right_front_wheel_steering:
+          Value: true
+        support:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
@@ -587,5 +577,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1230
-  X: 1051
-  Y: 78
+  X: 102
+  Y: 524

@@ -51,9 +51,8 @@ def generate_launch_description():
     use_robot_state_pub = LaunchConfiguration('use_robot_state_pub')
     use_rviz = LaunchConfiguration('use_rviz')
     headless = LaunchConfiguration('headless')
-    world = LaunchConfiguration('world')
-    pose = {'x': LaunchConfiguration('x_pose', default='0.00'),
-            'y': LaunchConfiguration('y_pose', default='0.00'),
+    pose = {'x': LaunchConfiguration('x_pose', default='1.00'),
+            'y': LaunchConfiguration('y_pose', default='1.00'),
             'z': LaunchConfiguration('z_pose', default='0.01'),
             'R': LaunchConfiguration('roll', default='0.00'),
             'P': LaunchConfiguration('pitch', default='0.00'),
@@ -139,41 +138,24 @@ def generate_launch_description():
         default_value='True',
         description='Whether to execute gzclient)')
 
-    declare_world_cmd = DeclareLaunchArgument(
-        'world',
-        # TODO(orduno) Switch back once ROS argument passing has been fixed upstream
-        #              https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/91
-        # default_value=os.path.join(get_package_share_directory('turtlebot3_gazebo'),
-        # worlds/turtlebot3_worlds/waffle.model')
-        default_value=os.path.join(bringup_dir, 'worlds', 'world_only.model'),
-        description='Full path to world model file to load')
-
     declare_robot_name_cmd = DeclareLaunchArgument(
         'robot_name',
         default_value='tarkbot_akm',
         description='name of the robot')
 
-    # Specify the actions
-    start_gazebo_server_cmd = ExecuteProcess(
-        condition=IfCondition(use_simulator),
-        cmd=['gzserver', '--verbose','-s', 'libgazebo_ros_init.so',
-             '-s', 'libgazebo_ros_factory.so', world],
-        cwd=[launch_dir], output='screen',)
 
-    start_gazebo_client_cmd = ExecuteProcess(
-        condition=IfCondition(PythonExpression(
-            [use_simulator, ' and not ', headless])),
-        cmd=['gzclient', '--verbose'],
-        cwd=[launch_dir], output='screen')
-
-
-    xacro_file = os.path.join(
-        bringup_dir, 'tarkbot_model',
-        'tarkbot_car.urdf.xacro'
+    gazebo_world_path = os.path.join(bringup_dir, 'worlds', 'empty.world')
+    start_gazebo_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [
+                os.path.join(get_package_share_directory("gazebo_ros"), "launch"),
+                "/gazebo.launch.py",
+            ]
+        ),
+        launch_arguments={"world": gazebo_world_path}.items(),
     )
 
-    robot_description = process_file(xacro_file).toxml()
-
+    robot_description = process_file(os.path.join(bringup_dir, 'tarkbot_model','tarkbot_car.urdf.xacro')).toxml()
     start_robot_state_publisher_cmd = Node(
         condition=IfCondition(use_robot_state_pub),
         package='robot_state_publisher',
@@ -216,20 +198,6 @@ def generate_launch_description():
                           'autostart': autostart,
                           'use_composition': use_composition,
                           'use_respawn': use_respawn}.items())
-    
-    transfer_odom_tf_cmd = Node(
-        package='nav2_bringup',
-        executable='transfer_odom_tf.py',
-        name='transfer_odom_tf',
-        namespace=namespace,
-        output='screen')
-    
-    transfer_cmd_vel_cmd = Node(
-        package='nav2_bringup',
-        executable='transfer_cmd_vel.py',
-        name='transfer_cmd_vel',
-        namespace=namespace,
-        output='screen')
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -249,22 +217,16 @@ def generate_launch_description():
     ld.add_action(declare_use_robot_state_pub_cmd)
     ld.add_action(declare_use_rviz_cmd)
     ld.add_action(declare_simulator_cmd)
-    ld.add_action(declare_world_cmd)
     ld.add_action(declare_robot_name_cmd)
     ld.add_action(declare_use_respawn_cmd)
 
     # Add any conditioned actions
-    ld.add_action(start_gazebo_server_cmd)
-    ld.add_action(start_gazebo_client_cmd)
+    ld.add_action(start_gazebo_cmd)
     ld.add_action(start_gazebo_spawner_cmd)
     ld.add_action(start_robot_state_publisher_cmd)
 
-    # 为阿克曼插件做的转换脚本
-    ld.add_action(transfer_odom_tf_cmd)
-    ld.add_action(transfer_cmd_vel_cmd)
-
     # Add the actions to launch all of the navigation nodes
-    ld.add_action(rviz_cmd)
-    ld.add_action(bringup_cmd)
+    # ld.add_action(rviz_cmd)
+    # ld.add_action(bringup_cmd)
 
     return ld

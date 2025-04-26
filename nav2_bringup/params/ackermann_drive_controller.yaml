@@ -18,6 +18,8 @@ ackermann_steering_controller:
     rear_wheels_radius: 0.03
     front_steering: true
     reference_timeout: 2.0
+    max_steering_angle: 0.785  # 45 degrees in radians
+    min_steering_angle: -0.785
     rear_wheels_names: ['left_back_wheel_joint', 'right_back_wheel_joint']
     front_wheels_names: ['left_front_steering_joint', 'right_front_steering_joint']
     use_stamped_vel: true
