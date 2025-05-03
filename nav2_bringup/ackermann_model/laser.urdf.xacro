@@ -1,0 +1,86 @@
+<!--
+    小车底盘添加雷达
+-->
+<robot name="my_laser" xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:include filename="$(find nav2_bringup)/ackermann_model/steer_base/inertials.xacro" />
+
+    <!-- 雷达支架 -->
+    <xacro:property name="support_length" value="0.05" /> <!-- 支架长度 -->
+    <xacro:property name="support_width" value="0.05" /> <!-- 支架宽度 -->
+    <xacro:property name="support_height" value="0.05" /> <!-- 支架高度 -->
+    <xacro:property name="support_x" value="0.0" /> <!-- 支架安装的x坐标 -->
+    <xacro:property name="support_y" value="0.0" /> <!-- 支架安装的y坐标 -->
+    <xacro:property name="support_z" value="${0.05 / 2 + support_length / 2}" /> <!--
+    支架安装的z坐标:底盘高度 / 2 + 支架高度 / 2  -->
+
+    <xacro:property name="support_m" value="0.02" /> <!-- 支架质量 -->
+
+    <link name="support">
+        <visual>
+            <geometry>
+                <box size="${support_length} ${support_width} ${support_height}" />
+            </geometry>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="${support_length} ${support_width} ${support_height}" />
+            </geometry>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+        </collision>
+
+        <xacro:solid_cuboid_inertial rpy="0 0 0" xyz="0 0 0"
+            mass="${support_m}" x="${support_length}" y="${support_width}" z="${support_height}" />
+    </link>
+
+    <joint name="support2base_link" type="fixed">
+        <parent link="base_link" />
+        <child link="support" />
+        <origin xyz="${support_x} ${support_y} ${support_z}" />
+    </joint>
+
+    <gazebo reference="support">
+        <material>Gazebo/White</material>
+    </gazebo>
+
+    <!-- 雷达属性 -->
+    <xacro:property name="laser_length" value="0.05" /> <!-- 雷达长度 -->
+    <xacro:property name="laser_radius" value="0.03" /> <!-- 雷达半径 -->
+    <xacro:property name="laser_x" value="0.0" /> <!-- 雷达安装的x坐标 -->
+    <xacro:property name="laser_y" value="0.0" /> <!-- 雷达安装的y坐标 -->
+    <xacro:property name="laser_z" value="${support_length / 2}" /> <!-- 雷达安装的z坐标:支架高度 / 2 + 雷达高度 / 2  -->
+
+    <xacro:property name="laser_m" value="0.1" /> <!-- 雷达质量 -->
+
+    <!-- 雷达关节以及link -->
+    <link name="base_scan">
+        <visual>
+            <geometry>
+                <!-- 圆柱 -->
+                <cylinder radius="${laser_radius}" length="${laser_length}" />
+                <!-- <mesh filename="package://nav2_bringup/tarkbot_model/meshs/laser.stl" /> -->
+            </geometry>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+        </visual>
+        <collision>
+            <geometry>
+                <!-- 圆柱 -->
+                <cylinder radius="${laser_radius}" length="${laser_length}" />
+                <!-- <mesh filename="package://nav2_bringup/tarkbot_model/meshs/laser.stl" /> -->
+            </geometry>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+        </collision>
+        <xacro:solid_cuboid_inertial rpy="0 0 0" xyz="0 0 0"
+            mass="0.001" x="0.001" y="0.001" z="0.001" />
+    </link>
+
+    <joint name="laser_base_link" type="fixed">
+        <parent link="support" />
+        <child link="base_scan" />
+        <origin xyz="${laser_x} ${laser_y} ${laser_z}" />
+    </joint>
+    <gazebo reference="base_scan">
+        <material>Gazebo/Black</material>
+    </gazebo>
+</robot>

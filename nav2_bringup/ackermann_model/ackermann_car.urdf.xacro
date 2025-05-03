@@ -2,4 +2,7 @@
 <robot name="my_car_camera" xmlns:xacro="http://wiki.ros.org/xacro">
     <xacro:include filename="ackermann.urdf.xacro" />
     <xacro:include filename="ackermann_gazebo.urdf.xacro" />
+    <xacro:include filename="laser_gazebo.urdf.xacro" />
+    <xacro:include filename="laser.urdf.xacro" />
+    <xacro:include filename="imu.urdf.xacro" />
 </robot>
