@@ -7,7 +7,7 @@ TarkbotRosNode::TarkbotRosNode()
     this->declare_parameter<std::string>("port", "/dev/ttyACM0");
     this->declare_parameter<int>("baud", 230400);
     this->declare_parameter<std::string>("robot_type", "r20_akm");
-    this->declare_parameter<bool>("pub_odom_tf", true);
+    this->declare_parameter<bool>("pub_odom_tf", false);
     this->declare_parameter<std::string>("odom_frame", "odom");
     this->declare_parameter<std::string>("base_frame", "base_footprint");
     this->declare_parameter<std::string>("imu_frame", "imu_link");
