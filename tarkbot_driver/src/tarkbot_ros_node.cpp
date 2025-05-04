@@ -127,8 +127,6 @@ void TarkbotRosNode::setup_loopback()
                 publish_imu();
                 publish_battery();
                 publish_odom_tf();
-
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         });
 

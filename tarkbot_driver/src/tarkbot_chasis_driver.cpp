@@ -261,22 +261,22 @@ void TarkbotDriver::handle_packet(const uint8_t *data)
         imu_data_.gyro_x = ((double)((int16_t)(data[10] * 256 + data[11])) * GYRO_RATIO);
         imu_data_.gyro_y = ((double)((int16_t)(data[12] * 256 + data[13])) * GYRO_RATIO);
         imu_data_.gyro_z = ((double)((int16_t)(data[14] * 256 + data[15])) * GYRO_RATIO);
-
-        // 计算IMU四元数数据
-        calculateImuQuaternion(imu_data_);
-
+        
         // 解析机器人速度
         vel_data_.linear_x = ((double)((int16_t)(data[16] * 256 + data[17])) / 1000);
         vel_data_.linear_y = ((double)((int16_t)(data[18] * 256 + data[19])) / 1000);
         vel_data_.angular_z = ((double)((int16_t)(data[20] * 256 + data[21])) / 1000);
-
+        
         // 解析电压值
         bat_vol_data_ = (double)(((data[22] << 8) + data[23])) / 100;
-
+        
         // 计算里程计数据
         pos_data_.pos_x += (vel_data_.linear_x * cos(pos_data_.angular_z) - vel_data_.linear_y * sin(pos_data_.angular_z)) * DATA_PERIOD;
         pos_data_.pos_y += (vel_data_.linear_x * sin(pos_data_.angular_z) + vel_data_.linear_y * cos(pos_data_.angular_z)) * DATA_PERIOD;
         pos_data_.angular_z += vel_data_.angular_z * DATA_PERIOD; // 绕Z轴的角位移，单位：rad
+
+        // 计算IMU四元数数据
+        calculateImuQuaternion(imu_data_);
     }
 }
 
