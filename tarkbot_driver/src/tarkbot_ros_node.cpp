@@ -88,61 +88,29 @@ rcl_interfaces::msg::SetParametersResult TarkbotRosNode::handle_parameters(
     const std::vector<rclcpp::Parameter> &parameters)
 {
     uint8_t data[1];
-    static bool change_enable;
 
     rcl_interfaces::msg::SetParametersResult result;
-    result.successful = true;
     for (const auto &param : parameters)
     {
         // 处理参数变化逻辑
         if (param.get_name() == "imu_calibrate" && param.as_bool())
         {
             RCLCPP_INFO(get_logger(), "Calibrating the IMU, Please hold the robot stationary for 5 seconds.");
-
+            
             data[0] = 0x55;
             driver_->send_packet(data, 2, ID_ROS2CTR_IMU);
-
-            // 重置参数
-            set_parameter(rclcpp::Parameter("imu_calibrate", false));
         }
-
+        
         if (param.get_name() == "light_calibrate" && param.as_bool())
         {
             RCLCPP_INFO(get_logger(), "Calibrating the light.");
-
+            
             data[0] = 0x55;
             driver_->send_packet(data, 2, ID_ROS2CTR_LST);
-
-            // 重置参数
-            set_parameter(rclcpp::Parameter("light_calibrate", false));
-        }
-
-        // 处理灯光参数
-        if (
-            (param.get_name() == "RGB_M" || param.get_name() == "RGB_R" ||
-             param.get_name() == "RGB_G" || param.get_name() == "RGB_B") &&
-            change_enable)
-        {
-            // 发送灯光控制指令
-            uint8_t data_light[6] = {
-                (uint8_t)get_parameter("RGB_M").as_int(),
-                (uint8_t)get_parameter("RGB_S").as_int(),
-                (uint8_t)get_parameter("RGB_T").as_int(),
-                (uint8_t)get_parameter("RGB_R").as_int(),
-                (uint8_t)get_parameter("RGB_G").as_int(),
-                (uint8_t)get_parameter("RGB_B").as_int()};
-
-            driver_->send_packet(data_light, 6, ID_ROS2CTR_LGT);
-
-            RCLCPP_INFO(get_logger(), "Set RGB params...");
-        }
-
-        if (change_enable == 0)
-        {
-            change_enable = 1;
         }
     }
-
+    
+    result.successful = true;
     return result;
 }
 
