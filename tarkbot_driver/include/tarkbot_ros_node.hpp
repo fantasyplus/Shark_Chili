@@ -71,7 +71,7 @@ private:
     bool publish_tf_;
     std::string robot_type_;
     std::string odom_frame_;
-    std::string base_frame_;
+    std::string base_footprint_frame_;
     std::string imu_frame_;
 };
 

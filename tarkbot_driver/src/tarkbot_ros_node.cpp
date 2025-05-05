@@ -9,7 +9,7 @@ TarkbotRosNode::TarkbotRosNode()
     this->declare_parameter<std::string>("robot_type", "r20_akm");
     this->declare_parameter<bool>("pub_odom_tf", false);
     this->declare_parameter<std::string>("odom_frame", "odom");
-    this->declare_parameter<std::string>("base_frame", "base_footprint");
+    this->declare_parameter<std::string>("base_footprint_frame", "base_footprint");
     this->declare_parameter<std::string>("imu_frame", "imu_link");
 
     this->declare_parameter("imu_calibrate", false);
@@ -30,7 +30,7 @@ TarkbotRosNode::TarkbotRosNode()
     this->get_parameter("robot_type", robot_type_);
     this->get_parameter("pub_odom_tf", publish_tf_);
     this->get_parameter("odom_frame", odom_frame_);
-    this->get_parameter("base_frame", base_frame_);
+    this->get_parameter("base_footprint_frame", base_footprint_frame_);
     this->get_parameter("imu_frame", imu_frame_);
 
     // 初始化驱动
@@ -144,7 +144,7 @@ void TarkbotRosNode::publish_odom()
     nav_msgs::msg::Odometry odom_msg;
     odom_msg.header.stamp = this->now();
     odom_msg.header.frame_id = odom_frame_;
-    odom_msg.child_frame_id = base_frame_;
+    odom_msg.child_frame_id = base_footprint_frame_;
     odom_msg.pose.pose.position.x = pos.pos_x;
     odom_msg.pose.pose.position.y = pos.pos_y;
     odom_msg.pose.pose.position.z = 0.0;
@@ -252,7 +252,7 @@ void TarkbotRosNode::publish_odom_tf()
     geometry_msgs::msg::TransformStamped odom_tf;
     odom_tf.header.stamp = this->now();
     odom_tf.header.frame_id = odom_frame_;
-    odom_tf.child_frame_id = base_frame_;
+    odom_tf.child_frame_id = base_footprint_frame_;
     odom_tf.transform.translation.x = pos.pos_x;
     odom_tf.transform.translation.y = pos.pos_y;
     odom_tf.transform.translation.z = 0.0;
@@ -262,7 +262,7 @@ void TarkbotRosNode::publish_odom_tf()
     odom_tf.transform.rotation.w = q.w();
 
     tf_broadcaster_->sendTransform(odom_tf);
-    // RCLCPP_INFO(this->get_logger(), "TF broadcasted: [%s -> %s]", odom_frame_.c_str(), base_frame_.c_str());
+    // RCLCPP_INFO(this->get_logger(), "TF broadcasted: [%s -> %s]", odom_frame_.c_str(), base_footprint_frame_.c_str());
 }
 
 void TarkbotRosNode::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
