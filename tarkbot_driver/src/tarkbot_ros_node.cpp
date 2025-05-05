@@ -64,7 +64,7 @@ void TarkbotRosNode::init_driver()
 
 void TarkbotRosNode::setup_publishers()
 {
-    odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
+    odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("odom_chasis", 10);
     imu_pub_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
     battery_pub_ = this->create_publisher<std_msgs::msg::Float32>("battery", 10);
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);

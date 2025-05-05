@@ -10,10 +10,9 @@ def generate_launch_description():
     port = LaunchConfiguration('port', default='/dev/ttyACM0')
     baud = LaunchConfiguration('baud', default='230400')
     robot_type = LaunchConfiguration('robot_type', default='r20_akm')
-    pub_odom_tf = LaunchConfiguration('pub_odom_tf', default='true')
+    pub_odom_tf = LaunchConfiguration('pub_odom_tf', default='false')
     base_footprint_frame = LaunchConfiguration('base_footprint_frame', default='base_footprint')
-    base_link_frame = LaunchConfiguration(
-        'base_link_frame', default='base_link')
+    base_link_frame = LaunchConfiguration('base_link_frame', default='base_link')
     imu_frame = LaunchConfiguration('imu_frame', default='imu_link')
 
     return LaunchDescription([
