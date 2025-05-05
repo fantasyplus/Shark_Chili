@@ -279,8 +279,8 @@ void TarkbotRosNode::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr
 
     // 设置速度
     driver_->send_packet(vel_data, 6, ID_ROS2CTR_VEL);
-    RCLCPP_INFO(this->get_logger(), "Velocity command sent: [%d, %d, %d, %d, %d, %d]",
-                vel_data[0], vel_data[1], vel_data[2], vel_data[3], vel_data[4], vel_data[5]);
+    // RCLCPP_INFO(this->get_logger(), "Velocity command sent: [%d, %d, %d, %d, %d, %d]",
+    //             vel_data[0], vel_data[1], vel_data[2], vel_data[3], vel_data[4], vel_data[5]);
 }
 
 void TarkbotRosNode::beep_callback(const std_msgs::msg::Int8::SharedPtr msg)

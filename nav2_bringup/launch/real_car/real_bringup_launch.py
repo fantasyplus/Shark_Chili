@@ -43,7 +43,7 @@ def generate_launch_description():
     declare_map_yaml_cmd = DeclareLaunchArgument(
         'map',
         default_value=os.path.join(
-            bringup_dir, 'maps', 'square.yaml'),
+            bringup_dir, 'maps', 'kameier.yaml'),
         description='Full path to map file to load')
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
@@ -53,7 +53,7 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(bringup_dir, 'params', 'nav2_params.yaml'),
+        default_value=os.path.join(bringup_dir, 'params', 'nav2_params_real.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     declare_autostart_cmd = DeclareLaunchArgument(
@@ -112,6 +112,6 @@ def generate_launch_description():
     ld.add_action(static_tf_cmd)
     ld.add_action(chassis_cmd)
     ld.add_action(sllidar_c1_cmd)
-    ld.add_action(ekf_localization_cmd)
+    # ld.add_action(ekf_localization_cmd)
     ld.add_action(bringup_cmd)
     return ld
