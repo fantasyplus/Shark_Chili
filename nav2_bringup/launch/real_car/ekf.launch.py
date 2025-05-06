@@ -30,11 +30,11 @@ def generate_launch_description():
             remappings=remapping,
             parameters=[os.path.join(get_package_share_directory("nav2_bringup"), 'params', 'nav2_params_real.yaml')],
            ),
-        Node(
-            package='robot_localization',
-            executable='ekf_node',
-            name='ekf_filter_node_global',
-            output='screen',
-            parameters=[os.path.join(get_package_share_directory("nav2_bringup"), 'params', 'nav2_params_real.yaml')],
-           ),
+        # Node(
+        #     package='robot_localization',
+        #     executable='ekf_node',
+        #     name='ekf_filter_node_global',
+        #     output='screen',
+        #     parameters=[os.path.join(get_package_share_directory("nav2_bringup"), 'params', 'nav2_params_real.yaml')],
+        #    ),
     ])

@@ -15,8 +15,6 @@ def generate_launch_description():
     base_link_frame = LaunchConfiguration('base_link_frame', default='base_link')
     imu_frame = LaunchConfiguration('imu_frame', default='imu_link')
 
-    remappings = [('odom_chassis', 'odom'),]
-
     return LaunchDescription([
         DeclareLaunchArgument(
             'port',
@@ -58,6 +56,5 @@ def generate_launch_description():
                          'base_footprint_frame': base_footprint_frame,
                          'imu_frame': imu_frame,
                          'base_link_frame': base_link_frame}],
-            remappings=remappings,
             output='screen'),
     ])
