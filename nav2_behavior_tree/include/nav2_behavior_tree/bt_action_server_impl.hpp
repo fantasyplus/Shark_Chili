@@ -178,6 +178,10 @@ bool BtActionServer<ActionT>::loadBehaviorTree(const std::string & bt_xml_filena
   // Empty filename is default for backward compatibility
   auto filename = bt_xml_filename.empty() ? default_bt_xml_filename_ : bt_xml_filename;
 
+  // 打印加载的行为树配置文件
+  RCLCPP_INFO(logger_, "action_name: %s, default_bt_xml_filename: %s",
+    action_name_.c_str(), filename.c_str());
+
   // Use previous BT if it is the existing one and always reload flag is not set to true
   if (!always_reload_bt_xml_ && current_bt_xml_filename_ == filename) {
     RCLCPP_DEBUG(logger_, "BT will not be reloaded as the given xml is already loaded");
