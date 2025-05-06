@@ -112,6 +112,6 @@ def generate_launch_description():
     ld.add_action(static_tf_cmd)
     ld.add_action(chassis_cmd)
     ld.add_action(sllidar_c1_cmd)
-    # ld.add_action(ekf_localization_cmd)
+    ld.add_action(ekf_localization_cmd)
     ld.add_action(bringup_cmd)
     return ld

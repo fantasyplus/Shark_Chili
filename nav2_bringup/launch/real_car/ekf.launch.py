@@ -25,9 +25,17 @@ def generate_launch_description():
         Node(
             package='robot_localization',
             executable='ekf_node',
-            name='ekf_filter_node',
+            name='ekf_filter_node_local',
             output='screen',
             remappings=remapping,
-            parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml')],
+            parameters=[os.path.join(get_package_share_directory("nav2_bringup"), 'params', 'nav2_params_real.yaml')],
            ),
-])
+        Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_filter_node_global',
+            output='screen',
+            remappings=remapping,
+            parameters=[os.path.join(get_package_share_directory("nav2_bringup"), 'params', 'nav2_params_real.yaml')],
+           ),
+    ])
