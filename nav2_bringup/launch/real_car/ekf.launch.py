@@ -19,12 +19,15 @@ from launch_ros.actions import Node
 import os
 
 def generate_launch_description():
+    remapping = [('odometry/filtered', 'odom')]
+
     return LaunchDescription([
         Node(
             package='robot_localization',
             executable='ekf_node',
             name='ekf_filter_node_local',
             output='screen',
+            remappings=remapping,
             parameters=[os.path.join(get_package_share_directory("nav2_bringup"), 'params', 'nav2_params_real.yaml')],
            ),
         Node(
