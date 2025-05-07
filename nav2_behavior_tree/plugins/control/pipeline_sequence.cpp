@@ -35,23 +35,34 @@ PipelineSequence::PipelineSequence(
 
 BT::NodeStatus PipelineSequence::tick()
 {
+  std::cout << "PipelineSequence: tick" << std::endl;
+
   for (std::size_t i = 0; i < children_nodes_.size(); ++i) {
     auto status = children_nodes_[i]->executeTick();
     switch (status) {
       case BT::NodeStatus::FAILURE:
         ControlNode::haltChildren();
         last_child_ticked_ = 0;  // reset
+        std::cout << "PipelineSequence: child " << i << " failed, name: " <<
+          children_nodes_[i]->name() << std::endl;
         return status;
       case BT::NodeStatus::SUCCESS:
         // do nothing and continue on to the next child. If it is the last child
         // we'll exit the loop and hit the wrap-up code at the end of the method.
+        std::cout << "PipelineSequence: child " << i << " succeeded, continue on to the next child, name: " <<
+          children_nodes_[i]->name() << std::endl;
         break;
       case BT::NodeStatus::RUNNING:
         if (i >= last_child_ticked_) {
+          std::cout << "PipelineSequence: child " << i << " is running, return and wait next PipelineSequence tick, name: " <<
+            children_nodes_[i]->name() << std::endl;
+          std::cout << "current last_child_ticked_: " << last_child_ticked_ << std::endl;
           last_child_ticked_ = i;
           return status;
         }
         // else do nothing and continue on to the next child
+        std::cout << "PipelineSequence: child " << i << " is running, but it is successed before, continue on to the next child, name: " <<
+          children_nodes_[i]->name() << std::endl;
         break;
       default:
         std::stringstream error_msg;
