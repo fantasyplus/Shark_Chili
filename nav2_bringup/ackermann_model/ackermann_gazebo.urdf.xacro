@@ -53,9 +53,9 @@
             <max_speed>1</max_speed>
 
             <!-- 转向控制 -->
-            <left_steering_pid_gain>70 0.15 7</left_steering_pid_gain>
+            <left_steering_pid_gain>1500 0.15 7</left_steering_pid_gain>
             <left_steering_i_range>0.2 -0.2</left_steering_i_range>
-            <right_steering_pid_gain>70 0.15 7</right_steering_pid_gain>
+            <right_steering_pid_gain>1500 0.15 7</right_steering_pid_gain>
             <right_steering_i_range>0.2 -0.2</right_steering_i_range>
             <!-- 速度控制 -->
             <linear_velocity_pid_gain>20 0.1 10</linear_velocity_pid_gain>
