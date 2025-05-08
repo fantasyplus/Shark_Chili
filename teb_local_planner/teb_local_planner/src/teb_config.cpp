@@ -447,7 +447,7 @@ rcl_interfaces::msg::SetParametersResult
     if (type == rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE) {
       // Trajectory
       if (name == node_name + ".teb_autosize") {
-        trajectory.teb_autosize = parameter.as_double();
+        trajectory.teb_autosize = parameter.as_bool();
       } else if (name == node_name + ".dt_ref") {
         trajectory.dt_ref = parameter.as_double();
       } else if (name == node_name + ".dt_hysteresis") {
