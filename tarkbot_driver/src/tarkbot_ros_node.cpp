@@ -11,6 +11,7 @@ TarkbotRosNode::TarkbotRosNode()
     this->declare_parameter<std::string>("odom_frame", "odom");
     this->declare_parameter<std::string>("base_footprint_frame", "base_footprint");
     this->declare_parameter<std::string>("imu_frame", "imu_link");
+    this->declare_parameter<bool>("sub_cmd_vel", true);
 
     this->declare_parameter("imu_calibrate", false);
     this->declare_parameter("light_calibrate", false);
@@ -32,6 +33,7 @@ TarkbotRosNode::TarkbotRosNode()
     this->get_parameter("odom_frame", odom_frame_);
     this->get_parameter("base_footprint_frame", base_footprint_frame_);
     this->get_parameter("imu_frame", imu_frame_);
+    this->get_parameter("sub_cmd_vel", sub_cmd_vel_);
 
     // 初始化驱动
     init_driver();
@@ -107,6 +109,11 @@ rcl_interfaces::msg::SetParametersResult TarkbotRosNode::handle_parameters(
             
             data[0] = 0x55;
             driver_->send_packet(data, 2, ID_ROS2CTR_LST);
+        }
+
+        if (param.get_name() == "sub_cmd_vel")
+        {
+            sub_cmd_vel_ = param.as_bool();
         }
     }
     
@@ -267,6 +274,11 @@ void TarkbotRosNode::publish_odom_tf()
 
 void TarkbotRosNode::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
+    if(!sub_cmd_vel_)
+    {
+        return;
+    }
+
     static uint8_t vel_data[11];
 
     // 数据转换

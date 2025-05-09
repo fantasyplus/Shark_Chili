@@ -73,6 +73,7 @@ private:
     std::string odom_frame_;
     std::string base_footprint_frame_;
     std::string imu_frame_;
+    bool sub_cmd_vel_;
 };
 
 #endif // TARKBOT_ROBOT_H
