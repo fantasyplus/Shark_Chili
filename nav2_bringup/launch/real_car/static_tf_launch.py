@@ -18,7 +18,7 @@ def generate_launch_description():
             arguments=[
                 '--x', '0',
                 '--y', '0',
-                '--z', '0.05',
+                '--z', '0',
                 '--frame-id', base_footprint_frame,
                 '--child-frame-id', base_link_frame
             ]
@@ -28,9 +28,9 @@ def generate_launch_description():
             executable='static_transform_publisher',
             name='base_to_laser',
             arguments=[
-                '--x', '0',
+                '--x', '0.13',
                 '--y', '0',
-                '--z', '0.08',
+                '--z', '0.12',
                 '--yaw', '3.14159',
                 '--frame-id', base_link_frame,
                 '--child-frame-id', laser_frame

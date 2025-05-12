@@ -14,6 +14,7 @@ def generate_launch_description():
     base_footprint_frame = LaunchConfiguration('base_footprint_frame', default='base_footprint')
     base_link_frame = LaunchConfiguration('base_link_frame', default='base_link')
     imu_frame = LaunchConfiguration('imu_frame', default='imu_link')
+    sub_cmd_vel = LaunchConfiguration('sub_cmd_vel', default='true')
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -44,6 +45,10 @@ def generate_launch_description():
             'imu_frame',
             default_value=imu_frame,
             description='Specifying imu frame'),
+        DeclareLaunchArgument(
+            'sub_cmd_vel',
+            default_value=sub_cmd_vel,
+            description='Specifying whether or not to subscribe to cmd_vel topic'),
 
         Node(
             package='tarkbot_driver',
@@ -55,6 +60,7 @@ def generate_launch_description():
                          'pub_odom_tf': pub_odom_tf,
                          'base_footprint_frame': base_footprint_frame,
                          'imu_frame': imu_frame,
-                         'base_link_frame': base_link_frame}],
+                         'base_link_frame': base_link_frame,
+                         'sub_cmd_vel': sub_cmd_vel}],
             output='screen'),
     ])
