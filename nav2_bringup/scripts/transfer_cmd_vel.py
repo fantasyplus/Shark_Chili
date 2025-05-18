@@ -12,14 +12,14 @@ class TwistConverter(Node):
             Twist,
             'cmd_vel',
             self.callback,
-            1  # QoS队列大小
+            10  # QoS队列大小
         )
         
         # 创建发布器用于发布转换后的消息
         self.publisher = self.create_publisher(
             TwistStamped,
             '/ackermann_steering_controller/reference',
-            1  # QoS队列大小
+            10  # QoS队列大小
         )
         
         self.get_logger().info('Twist转换节点已启动')

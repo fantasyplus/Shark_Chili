@@ -51,9 +51,9 @@ def generate_launch_description():
     use_robot_state_pub = LaunchConfiguration('use_robot_state_pub')
     use_rviz = LaunchConfiguration('use_rviz')
     headless = LaunchConfiguration('headless')
-    pose = {'x': LaunchConfiguration('x_pose', default='-2.00'),
-            'y': LaunchConfiguration('y_pose', default='-0.50'),
-            'z': LaunchConfiguration('z_pose', default='0.1'),
+    pose = {'x': LaunchConfiguration('x_pose', default='0.00'),
+            'y': LaunchConfiguration('y_pose', default='0.00'),
+            'z': LaunchConfiguration('z_pose', default='0.00'),
             'R': LaunchConfiguration('roll', default='0.00'),
             'P': LaunchConfiguration('pitch', default='0.00'),
             'Y': LaunchConfiguration('yaw', default='0.00')}
@@ -87,7 +87,7 @@ def generate_launch_description():
     declare_map_yaml_cmd = DeclareLaunchArgument(
         'map',
         default_value=os.path.join(
-            bringup_dir, 'maps', 'turtlebot3_world.yaml'),
+            bringup_dir, 'maps', 'turtlebot3_world_without_center.yaml'),
         description='Full path to map file to load')
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
@@ -177,6 +177,32 @@ def generate_launch_description():
             '-robot_namespace', namespace,
             '-x', pose['x'], '-y', pose['y'], '-z', pose['z'],
             '-R', pose['R'], '-P', pose['P'], '-Y', pose['Y']])
+    
+    load_joint_state_broadcaster = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+             'joint_state_broadcaster'],
+        output='screen'
+    )
+
+    load_ackermann_drive_base_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+             'ackermann_steering_controller'],
+        output='screen'
+    )
+
+    transfer_odom_tf_cmd = Node(
+        package='nav2_bringup',
+        executable='transfer_odom_tf.py',
+        name='transfer_odom_tf',
+        namespace=namespace,
+        output='screen')
+    
+    transfer_cmd_vel_cmd = Node(
+        package='nav2_bringup',
+        executable='transfer_cmd_vel.py',
+        name='transfer_cmd_vel',
+        namespace=namespace,
+        output='screen')
 
     rviz_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -224,6 +250,12 @@ def generate_launch_description():
     ld.add_action(start_gazebo_cmd)
     ld.add_action(start_gazebo_spawner_cmd)
     ld.add_action(start_robot_state_publisher_cmd)
+    ld.add_action(load_joint_state_broadcaster)
+    ld.add_action(load_ackermann_drive_base_controller)
+
+    # Add the transfer node
+    ld.add_action(transfer_odom_tf_cmd)
+    ld.add_action(transfer_cmd_vel_cmd)
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(rviz_cmd)

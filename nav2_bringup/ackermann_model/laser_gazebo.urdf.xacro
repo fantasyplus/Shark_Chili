@@ -3,7 +3,7 @@
   <gazebo reference="base_scan">
     <sensor type="gpu_ray" name="rplidar">
       <pose>0 0 0 0 0 0</pose>
-      <visualize>true</visualize>
+      <visualize>false</visualize>
       <update_rate>5</update_rate>
       <ray>
         <scan>

@@ -12,14 +12,14 @@ class AckermannControllerBridge(Node):
             TFMessage,
             '/ackermann_steering_controller/tf_odometry',
             self.callback_tf,
-            1)
+            10)
         self.subscription = self.create_subscription(
             Odometry,
             '/ackermann_steering_controller/odometry',
             self.callback_odom,
-            1)
-        self.publisher_tf = self.create_publisher(TFMessage, '/tf', 1)
-        self.publisher_odom = self.create_publisher(Odometry, '/odom', 1)
+            10)
+        self.publisher_tf = self.create_publisher(TFMessage, '/tf', 10)
+        self.publisher_odom = self.create_publisher(Odometry, '/odom', 10)
 
     def callback_tf(self, msg):
         self.publisher_tf.publish(msg)
