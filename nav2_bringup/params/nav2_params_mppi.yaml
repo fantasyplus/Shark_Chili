@@ -137,134 +137,105 @@ controller_server:
       xy_goal_tolerance: 0.25
       yaw_goal_tolerance: 0.25
     FollowPath:
-      plugin: "teb_local_planner::TebLocalPlannerROS"
-      odom_topic: odom
-      map_frame: /map
-
-      # Trajectoty 这部分主要是用于调整轨迹
-
-      teb_autosize: True #优化期间允许改变轨迹的时域长度
-      dt_ref: 0.3 #期望的轨迹时间分辨率
-      dt_hysteresis: 0.03 #根据当前时间分辨率自动调整大小的滞后现象，通常约为。建议使用dt ref的10%
-
-      #覆盖全局规划器提供的局部子目标的方向;规划局部路径时会覆盖掉全局路径点的方位角,
-      #对于车辆的2D规划,可以设置为False,可实现对全局路径的更好跟踪。
-      global_plan_overwrite_orientation: False
-
-      #指定考虑优化的全局计划子集的最大长度,如果为0或负数：禁用；长度也受本地Costmap大小的限制
-      max_global_plan_lookahead_dist: 1.2
-
-      feasibility_check_no_poses: 5 #检测位姿可到达的时间间隔，default：4
-      control_look_ahead_poses : 10 #控制前瞻轨迹的长度
-
-      #如果为true，则在目标落后于起点的情况下，可以使用向后运动来初始化基础轨迹
-      #(仅在机器人配备了后部传感器的情况下才建议这样做）
-      allow_init_with_backwards_motion: False
-
-      global_plan_viapoint_sep: 0.05
-
-      #参数在TebLocalPlannerROS::pruneGlobalPlan()函数中被使用
-      #该参数决定了从机器人当前位置的后面一定距离开始裁剪
-      #就是把机器人走过的全局路线给裁剪掉，因为已经过去了没有比较再参与计算后面的局部规划
-      global_plan_prune_distance: 0.1
-
-      exact_arc_length: True
-      publish_feedback: False
-
-      # Robot
-      max_vel_x: 0.1
-      max_vel_x_backwards: 0.05
-      max_vel_y : 0.0
-      max_vel_theta: 0.4
-      acc_lim_x: 0.2
-      acc_lim_y: 0.0
-      acc_lim_theta: 3.2
-
-      #仅适用于全向轮
-      # max_vel_y (double, default: 0.0)
-      # acc_lim_y (double, default: 0.5)
-
-      # ********************** Carlike robot parameters ********************
-      min_turning_radius: 0.35 # 最小转弯半径 注意车辆运动学中心是后轮中点
-      wheelbase: 0.2 # 即前后轮距离
-
-      #设置为true时，ROS话题（rostopic） cmd_vel/angular/z 内的数据是舵机角度，
-      cmd_angle_instead_rotvel: True
-      # ********************************************************************
-
-      # GoalTolerance
-      footprint_model:
-        type: "polygon"
-        vertices: "[[0.12, 0.08], [0.12, -0.08], [-0.12, -0.08], [-0.12, 0.08]]"
-
-      xy_goal_tolerance: 0.1
-      yaw_goal_tolerance: 1.0
-      #自由目标速度。设为False时，车辆到达终点时的目标速度为0。
-      #TEB是时间最优规划器。缺少目标速度约束将导致车辆“全速冲线”
-      free_goal_vel: False
-
-      # complete_global_plan: True
-      # Obstacles
-
-      min_obstacle_dist: 0.05 # 与障碍的最小期望距离,
-      inflation_dist: 0.12 #障碍物膨胀距离
-      include_costmap_obstacles: True #应否考虑到局部costmap的障碍设置为True后才能规避实时探测到的、建图时不存在的障碍物。
-      costmap_obstacles_behind_robot_dist: 0.1 #考虑后面n米内的障碍物2.0
-      obstacle_poses_affected: 3 #为了保持距离，每个障碍物位置都与轨道上最近的位置相连。
-      costmap_converter_plugin: "costmap_converter::CostmapToPolygonsDBSMCCH"
-      costmap_converter_spin_thread: True
-      costmap_converter_rate: 5
-
-      # Optimization
-
-      no_inner_iterations: 10
-      no_outer_iterations: 8
-      optimization_activate: True
-      optimization_verbose: False
-      penalty_epsilon: 0.05
-      weight_max_vel_x: 2.0
-      weight_max_vel_theta: 1.0
-      weight_acc_lim_x: 2.0
-      weight_acc_lim_theta: 1.0 #1
-      weight_kinematics_nh: 1000.0
-      weight_kinematics_forward_drive: 100.0 #1
-      weight_kinematics_turning_radius: 1.0 #1
-      weight_optimaltime: 1.0
-      weight_obstacle: 50.0 #50
-      weight_inflation: 10.0
-      weight_dynamic_obstacle: 10.0 # not in use yet
-      alternative_time_cost: False # not in use yet
-
-      # Homotopy Class Planner
-      enable_homotopy_class_planning: False
-      enable_multithreading: False
-      max_number_classes: 4
-      selection_cost_hysteresis: 5.0
-      selection_prefer_initial_plan: 1.0
-      selection_obst_cost_scale: 1.0
-      selection_alternative_time_cost: True
-
-      roadmap_graph_no_samples: 15
-      roadmap_graph_area_width: 2.0
-      roadmap_graph_area_length_scale: 1.0
-      h_signature_prescaler: 0.5
-      h_signature_threshold: 0.1
-      obstacle_heading_threshold: 0.45
-      switching_blocking_period: 0.0
-      viapoints_all_candidates: True
-      delete_detours_backwards: True
-      max_ratio_detours_duration_best_duration: 3.0
-      visualize_hc_graph: False
-      visualize_with_time_as_z_axis_scale: 0.0
-
-      # Recovery
-      shrink_horizon_backup: False
-      shrink_horizon_min_duration: 1.0
-      oscillation_recovery: True
-      oscillation_v_eps: 0.1
-      oscillation_omega_eps: 0.1
-      oscillation_recovery_min_duration: 1.0
-      oscillation_filter_duration: 3.0
+      plugin: "nav2_mppi_controller::MPPIController"
+      time_steps: 56
+      model_dt: 0.1
+      batch_size: 2000
+      vx_std: 0.2
+      wz_std: 0.4
+      vx_max: 0.2
+      vx_min: -0.05
+      wz_max: 1.9
+      iteration_count: 1
+      prune_distance: 1.5
+      transform_tolerance: 0.1
+      temperature: 0.3
+      gamma: 0.015
+      motion_model: "Ackermann"
+      visualize: true
+      TrajectoryVisualizer:
+        trajectory_step: 5
+        time_step: 3
+      AckermannConstraints:
+        min_turning_r: 0.35
+      critics: [
+          "ConstraintCritic",
+          # "CostCritic",
+          "GoalCritic",
+          "GoalAngleCritic",
+          "PathAlignCritic",
+          "PathFollowCritic",
+          "PathAngleCritic",
+          "PreferForwardCritic",
+        ]
+      ConstraintCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 4.0
+      GoalCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 5.0
+        threshold_to_consider: 1.4
+      GoalAngleCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 3.0
+        threshold_to_consider: 0.5
+      PreferForwardCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 5.0
+        threshold_to_consider: 0.5
+      ObstaclesCritic:
+        enabled: true
+        cost_power: 10
+        repulsion_weight: 15
+        critical_weight: 20.0
+        consider_footprint: true
+        collision_cost: 10000.0
+        collision_margin_distance: 0.1
+        near_goal_distance: 0.5
+      # CostCritic:
+      #   enabled: true
+      #   cost_power: 1
+      #   cost_weight: 3.81
+      #   critical_cost: 300.0
+      #   consider_footprint: true
+      #   collision_cost: 1000000.0
+      #   near_goal_distance: 1.0
+      PathAlignCritic:
+        enabled: true
+        cost_power: 5
+        cost_weight: 14.0
+        max_path_occupancy_ratio: 0.05
+        trajectory_point_step: 3
+        threshold_to_consider: 0.5
+        offset_from_furthest: 20
+        use_path_orientations: false
+      PathFollowCritic:
+        enabled: true
+        cost_power: 5
+        cost_weight: 10.0
+        offset_from_furthest: 5
+        threshold_to_consider: 1.4
+      PathAngleCritic:
+        enabled: true
+        cost_power: 5
+        cost_weight: 8.0
+        offset_from_furthest: 4
+        threshold_to_consider: 0.5
+        max_angle_to_furthest: 1.0
+        forward_preference: true
+      # VelocityDeadbandCritic:
+      #   enabled: true
+      #   cost_power: 1
+      #   cost_weight: 35.0
+      #   deadband_velocities: [0.05, 0.05, 0.05]
+      # TwirlingCritic:
+      #   enabled: true
+      #   twirling_cost_power: 1
+      #   twirling_cost_weight: 10.0
 
 local_costmap:
   local_costmap:
