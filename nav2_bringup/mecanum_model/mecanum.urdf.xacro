@@ -1,0 +1,6 @@
+<robot name="mecanum_car" xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:include filename="mecanum_base.xacro" />
+    <xacro:include filename="mecanum_gazebo.urdf.xacro" />
+    <xacro:include filename="laser_gazebo.urdf.xacro" />
+    <xacro:include filename="imu_gazebo.urdf.xacro" />
+</robot>

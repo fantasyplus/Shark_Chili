@@ -10,6 +10,7 @@ Panels:
         - /Global Planner1/Path1
         - /Global Planner1/VoxelGrid1
         - /Controller1
+        - /Controller1/mppi_traj1/Topic1
       Splitter Ratio: 0.5086705088615417
     Tree Height: 993
   - Class: rviz_common/Selection
@@ -58,20 +59,73 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /robot_description
-      Enabled: false
+      Enabled: true
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_scan:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_left_back:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_left_front:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_right_back:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_right_front:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        real_sense:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        realsense_depth:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
       Name: RobotModel
       TF Prefix: ""
       Update Interval: 0
-      Value: false
+      Value: true
       Visual Enabled: true
     - Class: rviz_default_plugins/TF
       Enabled: true
@@ -84,22 +138,26 @@ Visualization Manager:
           Value: false
         base_scan:
           Value: false
-        front_left_steer_link:
+        camera:
           Value: true
-        front_right_steer_link:
+        imu:
           Value: true
-        imu_link:
-          Value: false
+        link_left_back:
+          Value: true
+        link_left_front:
+          Value: true
+        link_right_back:
+          Value: true
+        link_right_front:
+          Value: true
         map:
           Value: true
         odom:
           Value: false
-        rear_left_wheel_link:
-          Value: false
-        rear_right_wheel_link:
-          Value: false
-        support:
-          Value: false
+        real_sense:
+          Value: true
+        realsense_depth:
+          Value: true
       Marker Scale: 0.20000000298023224
       Name: TF
       Show Arrows: true
@@ -110,18 +168,22 @@ Visualization Manager:
           odom:
             base_footprint:
               base_link:
-                front_left_steer_link:
+                base_scan:
                   {}
-                front_right_steer_link:
+                camera:
                   {}
-                imu_link:
+                imu:
                   {}
-                rear_left_wheel_link:
+                link_left_back:
                   {}
-                rear_right_wheel_link:
+                link_left_front:
                   {}
-                support:
-                  base_scan:
+                link_right_back:
+                  {}
+                link_right_front:
+                  {}
+                real_sense:
+                  realsense_depth:
                     {}
       Update Interval: 0
       Value: true
@@ -432,7 +494,7 @@ Visualization Manager:
           Color: 204; 51; 204
           Scale: 1
           Value: true
-        Value: true
+        Value: false
       Enabled: false
       Keep: 100
       Name: Odometry
@@ -528,7 +590,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/XYOrbit
-      Distance: 8.087200164794922
+      Distance: 7.949182510375977
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

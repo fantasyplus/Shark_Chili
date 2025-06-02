@@ -14,6 +14,7 @@ install(DIRECTORY worlds DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY params DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY urdf DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY ackermann_model DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY mecanum_model DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY scripts DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

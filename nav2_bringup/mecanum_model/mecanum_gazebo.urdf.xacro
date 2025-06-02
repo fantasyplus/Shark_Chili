@@ -1,0 +1,17 @@
+<robot name="my_car_move" xmlns:xacro="http://wiki.ros.org/xacro">
+    <gazebo>
+        <plugin name="mecanum_controller" filename="libgazebo_ros_planar_move.so">
+            <!-- <robotNamespace>/racebot</robotNamespace> -->
+            <commandTopic>cmd_vel</commandTopic>
+            <odometryTopic>odom</odometryTopic>
+            <odometryFrame>odom</odometryFrame>
+            <leftFrontJoint>join_left_front</leftFrontJoint>
+            <rightFrontJoint>join_right_front</rightFrontJoint>
+            <leftRearJoint>join_left_back</leftRearJoint>
+            <rightRearJoint>join_right_back</rightRearJoint>
+            <odometryRate>60.0</odometryRate>
+            <robotBaseFrame>base_link</robotBaseFrame>
+        </plugin>
+    </gazebo>
+
+</robot>
